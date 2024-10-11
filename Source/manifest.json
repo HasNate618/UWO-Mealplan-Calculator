@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name" : "UWO Mealplan Calc",
+    "description": "Analyze your mealplan use for insights on how to preserve your mealplan.",
+    "version" : "1.0",
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "notifications"
+    ],
+    "icons": {
+        "16": "/images/icon_16.png",
+        "48": "/images/icon_48.png",
+        "128": "/images/icon_128.png"
+    },
+    "action": {
+        "default_popup": "popup.html"
+      },
+      "background": {
+        "service_worker": "background.js"
+      }
+}
