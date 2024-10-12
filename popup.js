@@ -114,11 +114,11 @@ document.getElementById('calculateButton').addEventListener('click', () => {
     const dailyFlexSpending = round2Dp(monthlyFlexSpending/30);
   
     // Open a new window and display the content inside <pre> tags for formatting
-    const newWindow = window.open("", "_blank", "width=600,height=600");
+    const newWindow = window.open("", "_blank", "width=500,height=80");
     newWindow.document.write("<html><head><title>Spending Analysis</title></head><body><pre>" 
-      + "*Values shown only include data from past month\n"
       + "\nDaily ResDlrs Spending: $" + dailyResSpending 
       + "\nDaily Flex Spending: $" + dailyFlexSpending
+      + "\n\n*Values shown only include data from past month"
       + "</pre></body></html>");
     newWindow.document.close(); // Ensure the window content gets rendered
   }
