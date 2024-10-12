@@ -66,14 +66,12 @@ document.getElementById('calculateButton').addEventListener('click', () => {
       }
     }
 
-    console.log(oldestResBalance);
-    console.log(oldestFlexBalance);
+    /*console.log(oldestResBalance);
+    console.log(oldestFlexBalance);*/
 
 
     // Get newest balances for both tenders
     const newestTransaction = tableRows[2].innerHTML.split("\n");
-    //const newestBalance = elementToNum(newestTransaction[3]);
-
     let newestResBalance = 0;
     let newestFlexBalance = 0;
 
@@ -82,7 +80,7 @@ document.getElementById('calculateButton').addEventListener('click', () => {
       newestResBalance = elementToNum(newestTransaction[2]) + elementToNum(newestTransaction[3]);
 
       // Find newest Flex
-      for (let i = 3; i < tableRows.length - 1; i++) {
+      for (let i = 3; i < tableRows.length; i++) {
         const rowHtml = tableRows[i].innerHTML;
         if (rowHtml.includes("Flex")) {
           const rowSplit = rowHtml.split("\n");
@@ -95,7 +93,7 @@ document.getElementById('calculateButton').addEventListener('click', () => {
       newestFlexBalance = elementToNum(newestTransaction[2]) + elementToNum(newestTransaction[3]);
 
       // Find newest ResDlrs
-      for (let i = 3; i < tableRows.length - 1; i++) {
+      for (let i = 3; i < tableRows.length; i++) {
         const rowHtml = tableRows[i].innerHTML;
         if (rowHtml.includes("ResDlrs")) {
           const rowSplit = rowHtml.split("\n");
@@ -105,20 +103,36 @@ document.getElementById('calculateButton').addEventListener('click', () => {
       }
     }
     
-    console.log(newestResBalance);
-    console.log(newestFlexBalance);
+    /*console.log(newestResBalance);
+    console.log(newestFlexBalance);*/
 
+    // Calculate daily and monthly spendings
     const monthlyResSpending = round2Dp(oldestResBalance - newestResBalance);
     const dailyResSpending = round2Dp(monthlyResSpending/30);
     const monthlyFlexSpending = round2Dp(oldestFlexBalance - newestFlexBalance);
     const dailyFlexSpending = round2Dp(monthlyFlexSpending/30);
+
+    // Calculate projected remaining balances
+    const startDate = new Date("09/01/2024");
+    const currentDate = new Date();
+    const endDate = new Date("04/30/2025");
+    const daysLeft = Math.round((endDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24));
+    const projectedResBalance = newestResBalance - dailyResSpending*daysLeft;
+    const projectedFlexBalance = newestFlexBalance - dailyFlexSpending*daysLeft;
+    console.log("Projected ResDlrs Balance: $" + projectedResBalance);
+    console.log("Projected Flex Balance: $" + projectedFlexBalance);
+    console.log("Projected Total Balance: $" + projectedResBalance + projectedFlexBalance);
+
   
     // Open a new window and display the content inside <pre> tags for formatting
-    const newWindow = window.open("", "_blank", "width=500,height=80");
+    const newWindow = window.open("", "_blank", "width=500,height=140");
     newWindow.document.write("<html><head><title>Spending Analysis</title></head><body><pre>" 
       + "\nDaily ResDlrs Spending: $" + dailyResSpending 
       + "\nDaily Flex Spending: $" + dailyFlexSpending
-      + "\n\n*Values shown only include data from past month"
+      + "\n\nProjected ResDlrs Balance: $" + projectedResBalance
+      + "\nProjected Flex Balance: $" + projectedFlexBalance
+      + "\nProjected Total Balance: $" + round2Dp(projectedResBalance + projectedFlexBalance)
+      //+ "\n\n*Values shown are calculated using data from past month, not all time (yet)"
       + "</pre></body></html>");
     newWindow.document.close(); // Ensure the window content gets rendered
   }
