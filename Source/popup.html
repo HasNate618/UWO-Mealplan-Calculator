@@ -2,9 +2,42 @@
 <html>
   <head>
     <title>Print HTML</title>
+    <style>
+      body {
+        width: 240px;
+        height: 70;
+        margin: 0;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 400;
+      } 
+
+      button {
+        padding: 10px;
+        background-color: #4F2683;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+        font-weight: 500;
+      }
+
+      button:hover {
+        color: #d3d3d3;
+      }
+
+      #tabtip {
+        margin-top: 10px;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <button id="printHtml">Print HTML</button>
+    <button id="calculateButton">Calculate</button>
+    <p id="tabTip">Please go to "History" tab on the "Meal Plan Top Up" website before pressing Calculate.</p>
     <script src="popup.js"></script>
   </body>
 </html>
