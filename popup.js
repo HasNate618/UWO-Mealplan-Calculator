@@ -119,9 +119,9 @@ document.getElementById('calculateButton').addEventListener('click', () => {
     const daysLeft = Math.round((endDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24));
     const projectedResBalance = newestResBalance - dailyResSpending*daysLeft;
     const projectedFlexBalance = newestFlexBalance - dailyFlexSpending*daysLeft;
-    console.log("Projected ResDlrs Balance: $" + projectedResBalance);
-    console.log("Projected Flex Balance: $" + projectedFlexBalance);
-    console.log("Projected Total Balance: $" + projectedResBalance + projectedFlexBalance);
+    //console.log("Projected ResDlrs Balance: $" + projectedResBalance);
+    //console.log("Projected Flex Balance: $" + projectedFlexBalance);
+    //console.log("Projected Total Balance: $" + round2Dp(projectedResBalance + projectedFlexBalance));
 
   
     // Open a new window and display the content inside <pre> tags for formatting
