@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spending Analysis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      font-size: 26px;
+      color: #4f2683;
+      margin-bottom: 10px;
+    }
+    
+    h2 {
+      font-size: 18px;
+      color: #4f2683;
+      margin-bottom: 5px;
+    }
+    
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 2px 0;
+    }
+
+    .analysis-section {
+      margin-top: 20px;
+    }
+
+    .note {
+      font-size: 14px;
+      color: #777;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Spending Analysis</h1>
+
+    <div class="analysis-section">
+      <h2>Daily Spending</h2>
+      <p id="dailyResSpending"></p>
+      <p id="dailyFlexSpending"></p>
+    </div>
+
+    <div class="analysis-section">
+      <h2>Projected Balances</h2>
+      <p id="projectedResBalance"></p>
+      <p id="projectedFlexBalance"></p>
+      <p id="projectedTotalBalance"></p>
+    </div>
+
+    <div class="analysis-section">
+      <h2>Recommended Daily Spending</h2>
+      <p id="targetResSpending"></p>
+      <p id="targetFlexSpending"></p>
+    </div>
+
+    <div class="note">
+      *Analysis based on data from the past month, projections as at 04/30/2025.
+    </div>
+  </div>
+
+  <script src="analysis.js"></script>
+</body>
+</html>

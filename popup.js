@@ -24,10 +24,6 @@ document.getElementById('calculateButton').addEventListener('click', () => {
     const tableRows = document.querySelectorAll("table tr");
     let rowsHtml = "";
 
-    function round2Dp(amount) {
-      return Math.round(100*amount)/100
-    }
-
     function elementToNum(element) {
       return parseFloat(element.trim().replace("<td>$","").replace('<td class="mobile_hide">$',"").replace("</td>",""));
     }
@@ -51,6 +47,7 @@ document.getElementById('calculateButton').addEventListener('click', () => {
           break; // Stop once Flex balance is found
         }
       }
+      oldestFlexBalance = 'N/A';
     } else {
       // Oldest Flex given, calculate Flex balance
       oldestFlexBalance = elementToNum(oldestTransaction[2]) + elementToNum(oldestTransaction[3]);
@@ -64,10 +61,8 @@ document.getElementById('calculateButton').addEventListener('click', () => {
           break; // Stop once ResDlrs balance is found
         }
       }
+      oldestResBalance = 'N/A';
     }
-
-    /*console.log(oldestResBalance);
-    console.log(oldestFlexBalance);*/
 
 
     // Get newest balances for both tenders
@@ -85,9 +80,10 @@ document.getElementById('calculateButton').addEventListener('click', () => {
         if (rowHtml.includes("Flex")) {
           const rowSplit = rowHtml.split("\n");
           newestFlexBalance = elementToNum(rowSplit[3]);
-          break; // Stop once Flex balance is found
+          break;
         }
       }
+      newestFlexBalance = 'N/A';
     } else {
       // Newest Flex given, calculate Flex balance
       newestFlexBalance = elementToNum(newestTransaction[2]) + elementToNum(newestTransaction[3]);
@@ -98,19 +94,18 @@ document.getElementById('calculateButton').addEventListener('click', () => {
         if (rowHtml.includes("ResDlrs")) {
           const rowSplit = rowHtml.split("\n");
           newestResBalance = elementToNum(rowSplit[3]);
-          break; // Stop once ResDlrs balance is found
+          break;
         }
       }
+      newestResBalance = 'N/A';
     }
-    
-    /*console.log(newestResBalance);
-    console.log(newestFlexBalance);*/
 
+    
     // Calculate daily and monthly spendings
-    const monthlyResSpending = round2Dp(oldestResBalance - newestResBalance);
-    const dailyResSpending = round2Dp(monthlyResSpending/30);
-    const monthlyFlexSpending = round2Dp(oldestFlexBalance - newestFlexBalance);
-    const dailyFlexSpending = round2Dp(monthlyFlexSpending/30);
+    const monthlyResSpending = oldestResBalance - newestResBalance;
+    const dailyResSpending = monthlyResSpending/30;
+    const monthlyFlexSpending = oldestFlexBalance - newestFlexBalance;
+    const dailyFlexSpending = monthlyFlexSpending/30;
 
     // Calculate projected remaining balances
     const startDate = new Date("09/01/2024");
@@ -119,20 +114,25 @@ document.getElementById('calculateButton').addEventListener('click', () => {
     const daysLeft = Math.round((endDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24));
     const projectedResBalance = newestResBalance - dailyResSpending*daysLeft;
     const projectedFlexBalance = newestFlexBalance - dailyFlexSpending*daysLeft;
-    //console.log("Projected ResDlrs Balance: $" + projectedResBalance);
-    //console.log("Projected Flex Balance: $" + projectedFlexBalance);
-    //console.log("Projected Total Balance: $" + round2Dp(projectedResBalance + projectedFlexBalance));
 
-  
-    // Open a new window and display the content inside <pre> tags for formatting
-    const newWindow = window.open("", "_blank", "width=500,height=140");
-    newWindow.document.write("<html><head><title>Spending Analysis</title></head><body><pre>" 
-      + "\nDaily ResDlrs Spending: $" + dailyResSpending 
-      + "\nDaily Flex Spending: $" + dailyFlexSpending
-      + "\n\nProjected ResDlrs Balance: $" + projectedResBalance
-      + "\nProjected Flex Balance: $" + projectedFlexBalance
-      + "\nProjected Total Balance: $" + round2Dp(projectedResBalance + projectedFlexBalance)
-      //+ "\n\n*Values shown are calculated using data from past month, not all time (yet)"
-      + "</pre></body></html>");
-    newWindow.document.close(); // Ensure the window content gets rendered
+    // Calculate recommended daily spending ($/day to use up balance by end of year)
+    const targetResSpending = newestResBalance/daysLeft;
+    const targetFlexSpending = newestFlexBalance/daysLeft;
+
+    function numToDollar(number) {
+      const dollar = (Math.sign(number) >= 0 ? "" : "-") + "$" + Math.abs(number).toFixed(2)
+      return dollar.localeCompare("-$NaN")?dollar:"N/A";
+    }
+
+    // Open analysis window with params
+    const queryString = `?dailyResSpending=${encodeURIComponent(numToDollar(dailyResSpending))}`
+    + `&dailyFlexSpending=${encodeURIComponent(numToDollar(dailyFlexSpending))}`
+    + `&projectedResBalance=${encodeURIComponent(numToDollar(projectedResBalance))}`
+    + `&projectedFlexBalance=${encodeURIComponent(numToDollar(projectedFlexBalance))}`
+    + `&projectedTotalBalance=${encodeURIComponent(numToDollar(projectedResBalance + projectedFlexBalance))}`
+    + `&targetResSpending=${encodeURIComponent(numToDollar(targetResSpending))}`
+    + `&targetFlexSpending=${encodeURIComponent(numToDollar(targetFlexSpending))}`;
+
+    const analysisHtmlUrl = chrome.runtime.getURL('analysis.html');
+    window.open(analysisHtmlUrl + queryString, '_blank', 'width=600,height=480');
   }

@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name" : "UWO Mealplan Calc",
-    "description": "Analyze your mealplan use for insights on how to preserve your mealplan.",
+    "description": "Calculates your daily mealplan spendings and your projected remaining balance by the end of the year .",
     "version" : "0.1",
     "permissions": [
         "activeTab",
@@ -15,5 +15,11 @@
     },
     "action": {
         "default_popup": "popup.html"
-    }
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["analysis.html"],
+        "matches": ["<all_urls>"]
+      }
+    ]
 }
