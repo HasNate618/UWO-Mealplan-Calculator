@@ -125,14 +125,17 @@ document.getElementById('calculateButton').addEventListener('click', () => {
     }
 
     // Open analysis window with params
-    const queryString = `?dailyResSpending=${encodeURIComponent(numToDollar(dailyResSpending))}`
+    const queryString 
+    = `?dailyResSpending=${encodeURIComponent(numToDollar(dailyResSpending))}`
     + `&dailyFlexSpending=${encodeURIComponent(numToDollar(dailyFlexSpending))}`
+    + `&dailyTotalSpending=${encodeURIComponent(numToDollar(dailyResSpending + dailyFlexSpending))}`
     + `&projectedResBalance=${encodeURIComponent(numToDollar(projectedResBalance))}`
     + `&projectedFlexBalance=${encodeURIComponent(numToDollar(projectedFlexBalance))}`
     + `&projectedTotalBalance=${encodeURIComponent(numToDollar(projectedResBalance + projectedFlexBalance))}`
     + `&targetResSpending=${encodeURIComponent(numToDollar(targetResSpending))}`
-    + `&targetFlexSpending=${encodeURIComponent(numToDollar(targetFlexSpending))}`;
+    + `&targetFlexSpending=${encodeURIComponent(numToDollar(targetFlexSpending))}`
+    + `&targetTotalSpending=${encodeURIComponent(numToDollar(targetResSpending + targetFlexSpending))}`;
 
     const analysisHtmlUrl = chrome.runtime.getURL('analysis.html');
-    window.open(analysisHtmlUrl + queryString, '_blank', 'width=600,height=480');
+    window.open(analysisHtmlUrl + queryString, '_blank', 'width=710,height=375');
   }

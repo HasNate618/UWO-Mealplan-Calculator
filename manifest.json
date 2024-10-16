@@ -1,12 +1,11 @@
 {
     "manifest_version": 3,
     "name" : "UWO Mealplan Calc",
-    "description": "Calculates your daily mealplan spendings and your projected remaining balance by the end of the year .",
+    "description": "Calculates your daily mealplan spendings and your projected remaining balance by the end of the year.",
     "version" : "0.1",
     "permissions": [
         "activeTab",
-        "scripting",
-        "notifications"
+        "scripting"
     ],  
     "icons": {
         "16": "/images/icon_16.png",

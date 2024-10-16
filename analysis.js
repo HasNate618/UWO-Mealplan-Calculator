@@ -2,10 +2,12 @@
 const urlParams = new URLSearchParams(window.location.search);
 
 // Set the values from the query parameters into the appropriate elements
-document.getElementById('dailyResSpending').textContent = "Daily ResDlrs Spending: " + urlParams.get('dailyResSpending');
-document.getElementById('dailyFlexSpending').textContent = "Daily Flex Spending: " + urlParams.get('dailyFlexSpending');
-document.getElementById('projectedResBalance').textContent = "Projected ResDlrs Balance: " + urlParams.get('projectedResBalance');
-document.getElementById('projectedFlexBalance').textContent = "Projected Flex Balance: " + urlParams.get('projectedFlexBalance');
-document.getElementById('projectedTotalBalance').textContent = "Projected Total Balance: " + urlParams.get('projectedTotalBalance');
-document.getElementById('targetResSpending').textContent = "Recommended Daily ResDlrs Spending: " + urlParams.get('targetResSpending');
-document.getElementById('targetFlexSpending').textContent = "Recommended Daily Flex Spending: " + urlParams.get('targetFlexSpending');
+document.getElementById('dailyResSpending').innerText = urlParams.get('dailyResSpending');
+document.getElementById('dailyFlexSpending').innerText = urlParams.get('dailyFlexSpending');
+document.getElementById('dailyTotalSpending').innerText = urlParams.get('dailyTotalSpending');
+document.getElementById('projectedResBalance').innerText = urlParams.get('projectedResBalance');
+document.getElementById('projectedFlexBalance').innerText = urlParams.get('projectedFlexBalance');
+document.getElementById('projectedTotalBalance').innerText = urlParams.get('projectedTotalBalance');
+document.getElementById('targetResSpending').innerText = urlParams.get('targetResSpending');
+document.getElementById('targetFlexSpending').innerText = urlParams.get('targetFlexSpending');
+document.getElementById('targetTotalSpending').innerText = urlParams.get('targetTotalSpending');
