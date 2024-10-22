@@ -4,16 +4,47 @@
     <title>Popup</title>
     <style>
       body {
-        width: 240px;
-        height: 70;
-        margin: 0;
+        width: 260px;
         padding: 12px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         font-weight: 400;
-      } 
+        font-family: Arial, sans-serif;
+      }
+
+      h2 {
+        color: #4f2683;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      label {
+        font-size: 14px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+      }
+
+      input[type="date"],
+      input[type="number"] {
+        font-size: 14px;
+        padding: 5px;
+        margin: 5px;
+        width: 100px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+      }
+
+      .input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
 
       button {
         padding: 10px;
@@ -23,24 +54,111 @@
         cursor: pointer;
         color: white;
         font-weight: 500;
+        margin-top: 10px;
+        width: 100%;
+        font-size: 16px;
       }
-
-
 
       button:hover {
         color: #d3d3d3;
       }
 
-      #tabtip {
+      #tabTip {
         margin-top: 10px;
-        text-align: center;
+        text-align: left;
+        font-size: 12px;
+      }
+
+      .toggle-switch {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+        margin-left: 10px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 20px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: 0.4s;
+      }
+
+      input:checked + .slider {
+        background-color: #4caf50;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(20px);
       }
     </style>
   </head>
   <body>
-    <h2>UWO Mealplan Calc</h2>
+    <h2>UWO Mealplan Calculator</h2>
+
+    <div class="input-group">
+      <label for="startDate">Year Start:</label>
+      <input type="date" id="startDate" value="2024-09-01" title="The start date of your mealplan use. Used in projected balances when calculating for All Time.">
+    </div>
+
+    <div class="input-group">
+      <label for="endDate">Year End:</label>
+      <input type="date" id="endDate" value="2025-04-30" title="The projected end date of your mealplan use. Used in projected balances.">
+    </div>
+    
+    <div class="input-group">
+      <label for="resBalance">Res Balance:</label>
+      <input type="number" id="resBalance" value="2570" min="0" step="0.01" title="The Residence Dollars balance as of the start date. Used when calculating for All Time">
+    </div>
+
+    <div class="input-group">
+      <label for="flexBalance">Flex Balance:</label>
+      <input type="number" id="flexBalance" value="500" min="0" step="0.01" title="The Flex Dollars balance as of the start date. Used when calculating for All Time">
+    </div>
+
+  <div class="toggle-switch">
+    <label for="timePeriodToggle">Past Month/All Time:</label>
+    <label class="switch">
+      <input type="checkbox" id="timePeriodToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+    <p id="tabTip">*Analyzing the past month provides a recent overview, while analyzing all time offers more accuracy.</p>
+
     <button id="calculateButton">Analyze</button>
-    <p id="tabTip">Please go to "History" tab on the "Meal Plan Top Up" website before pressing Analyze.</p>
+
+    <p id="tabTip">*Please go to the "History" tab on the "Meal Plan Top Up" website before pressing Analyze.</p>
+
+
     <script src="popup.js"></script>
   </body>
 </html>
