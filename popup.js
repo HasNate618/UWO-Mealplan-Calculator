@@ -31,8 +31,8 @@ document.getElementById('calculateButton').addEventListener('click', () => {
 
     // Get the oldest balances for both tenders
     const oldestTransaction = tableRows[tableRows.length - 1].innerHTML.split("\n");
-    let oldestResBalance = 0;
-    let oldestFlexBalance = 0;
+    let oldestResBalance = -1;
+    let oldestFlexBalance = -1;
 
     if (oldestTransaction[4].includes("ResDlrs")) {
       // Oldest ResDlrs given, calculate Res balance
@@ -47,7 +47,7 @@ document.getElementById('calculateButton').addEventListener('click', () => {
           break; // Stop once Flex balance is found
         }
       }
-      oldestFlexBalance = 'N/A';
+      if (oldestFlexBalance == -1) oldestFlexBalance = 'N/A';
     } else {
       // Oldest Flex given, calculate Flex balance
       oldestFlexBalance = elementToNum(oldestTransaction[2]) + elementToNum(oldestTransaction[3]);
@@ -61,14 +61,14 @@ document.getElementById('calculateButton').addEventListener('click', () => {
           break; // Stop once ResDlrs balance is found
         }
       }
-      oldestResBalance = 'N/A';
+      if (oldestResBalance == -1) oldestResBalance = 'N/A';
     }
 
 
     // Get newest balances for both tenders
     const newestTransaction = tableRows[2].innerHTML.split("\n");
-    let newestResBalance = 0;
-    let newestFlexBalance = 0;
+    let newestResBalance = -1;
+    let newestFlexBalance = -1;
 
     if (newestTransaction[4].includes("ResDlrs")) {
       // Newest ResDlrs given, calculate Res balance
@@ -83,7 +83,7 @@ document.getElementById('calculateButton').addEventListener('click', () => {
           break;
         }
       }
-      newestFlexBalance = 'N/A';
+      if (newestFlexBalance == -1) newestFlexBalance = 'N/A';
     } else {
       // Newest Flex given, calculate Flex balance
       newestFlexBalance = elementToNum(newestTransaction[2]) + elementToNum(newestTransaction[3]);
@@ -97,8 +97,11 @@ document.getElementById('calculateButton').addEventListener('click', () => {
           break;
         }
       }
-      newestResBalance = 'N/A';
+      if (newestResBalance == -1) newestResBalance = 'N/A';
     }
+
+    console.log(oldestFlexBalance);
+    console.log(newestFlexBalance);
 
     
     // Calculate daily and monthly spendings
@@ -106,6 +109,8 @@ document.getElementById('calculateButton').addEventListener('click', () => {
     const dailyResSpending = monthlyResSpending/30;
     const monthlyFlexSpending = oldestFlexBalance - newestFlexBalance;
     const dailyFlexSpending = monthlyFlexSpending/30;
+
+    // *Students start with 2570 ResDlrs and 500 Flex
 
     // Calculate projected remaining balances
     const startDate = new Date("09/01/2024");
