@@ -28,15 +28,11 @@ document.getElementById('calculateButton').addEventListener('click', () => {
 });
 
 function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance, startDate, endDate) {
-  console.log('Past Month toggle:', pastMonthBased);
-  console.log('Residence Balance:', beginningResBalance);
-  console.log('Flex Balance:', beginningFlexBalance);
-  console.log('Start Date:', startDate);
-  console.log('End Date:', endDate);
   
   // Select all table rows on the page
   const tableRows = document.querySelectorAll("table tr");
   let rowsHtml = "";
+
 
   function elementToNum(element) {
     return parseFloat(element.trim().replace("<td>$","").replace('<td class="mobile_hide">$',"").replace("</td>",""));
@@ -44,8 +40,7 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
 
 
   // Get oldest balances (if past month based)
-  let oldestResBalance = -1;
-  let oldestFlexBalance = -1;
+  let oldestResBalance, oldestFlexBalance;
 
   if (pastMonthBased) {
     // Get the oldest balances for both tenders
@@ -64,7 +59,6 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
           break; // Stop once Flex balance is found
         }
       }
-      if (oldestFlexBalance == -1) oldestFlexBalance = 'N/A';
     } else {
       // Oldest Flex given, calculate Flex balance
       oldestFlexBalance = elementToNum(oldestTransaction[2]) + elementToNum(oldestTransaction[3]);
@@ -78,15 +72,13 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
           break; // Stop once ResDlrs balance is found
         }
       }
-      if (oldestResBalance == -1) oldestResBalance = 'N/A';
     }
   }
 
 
   // Get newest balances for both tenders
   const newestTransaction = tableRows[2].innerHTML.split("\n");
-  let newestResBalance = -1;
-  let newestFlexBalance = -1;
+  let newestResBalance, newestFlexBalance;
 
   if (newestTransaction[4].includes("ResDlrs")) {
     // Newest ResDlrs given, calculate Res balance
@@ -101,7 +93,6 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
         break;
       }
     }
-    if (newestFlexBalance == -1) newestFlexBalance = 'N/A';
   } else {
     // Newest Flex given, calculate Flex balance
     newestFlexBalance = elementToNum(newestTransaction[2]) + elementToNum(newestTransaction[3]);
@@ -115,7 +106,6 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
         break;
       }
     }
-    if (newestResBalance == -1) newestResBalance = 'N/A';
   }
 
 
@@ -130,9 +120,9 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
   const daysInYear = (endDateObj.getTime() - startDateObj.getTime()) / msPerDay;
 
 
-  // Data variables
+  // Define data variables
   let dailyResSpending, dailyFlexSpending, projectedResBalance, 
-  projectedFlexBalance, targetResSpending, targetFlexSpending = 0;  
+  projectedFlexBalance, targetResSpending, targetFlexSpending;  
 
   // Calculations
   if (pastMonthBased){
