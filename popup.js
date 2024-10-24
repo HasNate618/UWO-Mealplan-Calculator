@@ -172,5 +172,5 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
   + `&targetTotalSpending=${encodeURIComponent(numToDollar(targetResSpending + targetFlexSpending))}`;
 
   const analysisHtmlUrl = chrome.runtime.getURL('analysis.html');
-  window.open(analysisHtmlUrl + queryString, '_blank', 'width=710,height=375');
+  window.open(analysisHtmlUrl + queryString, '_blank', 'width=710,height=340');
 }
