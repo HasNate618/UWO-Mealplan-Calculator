@@ -146,7 +146,7 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
 
     // Projected balances
     projectedResBalance = beginningResBalance - dailyResSpending*daysInYear;
-    projectedFlexBalance = beginningFlexBalance - dailyFlexSpending*daysLeft;
+    projectedFlexBalance = beginningFlexBalance - dailyFlexSpending*daysInYear;
 
     // Recommended daily spendins
     targetResSpending = newestResBalance/daysLeft;
@@ -172,5 +172,5 @@ function calculateData(pastMonthBased, beginningResBalance, beginningFlexBalance
   + `&targetTotalSpending=${encodeURIComponent(numToDollar(targetResSpending + targetFlexSpending))}`;
 
   const analysisHtmlUrl = chrome.runtime.getURL('analysis.html');
-  window.open(analysisHtmlUrl + queryString, '_blank', 'width=710,height=340');
+  window.open(analysisHtmlUrl + queryString, '_blank', 'width=710,height=345');
 }
