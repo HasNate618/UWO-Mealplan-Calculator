@@ -16,6 +16,12 @@
     "action": {
         "default_popup": "popup.html"
     },
+    "content_scripts": [
+        {
+            "matches": ["https://mealplan.uwo.ca/topup/history*"],
+            "js": ["content.js"]
+        }
+    ],
     "web_accessible_resources": [
       {
         "resources": ["analysis.html"],
