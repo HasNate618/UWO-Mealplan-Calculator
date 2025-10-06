@@ -86,11 +86,11 @@ function injectCalculatorForm() {
       tenderInputs.push(tenderId);
       
       tenderInputsHTML += `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <label style="font-size: 14px; margin-right: 5px;">Starting ${tender} Balance:</label>
+        <div style="display: flex; flex-direction: column;">
+          <label style="font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #333;">${tender} Balance:</label>
           <input type="number" id="${tenderId}" value="${savedBalance}" min="0" step="0.01" style="
-            font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
-            border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
+            font-size: 14px; padding: 8px 10px; border: 1px solid #ccc;
+            border-radius: 5px; font-family: Arial, sans-serif; transition: border-color 0.2s;
           ">
         </div>
       `;
@@ -131,45 +131,52 @@ function injectCalculatorForm() {
           ">Settings</button>
         </div>
         
-        <div id="config-panel" style="display: none; margin-top: 15px; margin-bottom: 15px;">
-          <div style="display: grid; grid-template-columns: ${gridCols}; gap: 15px; margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label style="font-size: 14px; margin-right: 5px;">Year Start Date:</label>
+        <div id="config-panel" style="display: none; margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4f2683; font-weight: 600; border-bottom: 2px solid #4f2683; padding-bottom: 8px;">Academic Year Dates</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div style="display: flex; flex-direction: column;">
+              <label style="font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #333;">Year Start Date:</label>
               <input type="date" id="injected-startDate" value="${startDate}" style="
-                font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
-                border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
+                font-size: 14px; padding: 8px 10px; border: 1px solid #ccc;
+                border-radius: 5px; font-family: Arial, sans-serif; transition: border-color 0.2s;
               ">
             </div>
             
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label style="font-size: 14px; margin-right: 5px;">Year End Date:</label>
+            <div style="display: flex; flex-direction: column;">
+              <label style="font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #333;">Year End Date:</label>
               <input type="date" id="injected-endDate" value="${endDate}" style="
-                font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
-                border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
+                font-size: 14px; padding: 8px 10px; border: 1px solid #ccc;
+                border-radius: 5px; font-family: Arial, sans-serif; transition: border-color 0.2s;
               ">
             </div>
-            
+          </div>
+          
+          <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4f2683; font-weight: 600; border-bottom: 2px solid #4f2683; padding-bottom: 8px;">Starting Balances</h3>
+          <div style="display: grid; grid-template-columns: ${gridCols}; gap: 15px; margin-bottom: 20px;">
             ${tenderInputsHTML}
           </div>
           
-          <div style="display: flex; align-items: center; justify-content: center; margin: 15px 0;">
-            <label style="font-size: 14px; margin-right: 10px;">Past Month/All Time:</label>
-            <label style="position: relative; display: inline-block; width: 40px; height: 20px;">
+          <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4f2683; font-weight: 600; border-bottom: 2px solid #4f2683; padding-bottom: 8px;">Calculation Method</h3>
+          <div style="display: flex; align-items: center; justify-content: center; padding: 15px; background: white; border-radius: 5px; border: 1px solid #e0e0e0;">
+            <label style="font-size: 14px; font-weight: 500; margin-right: 15px; color: #333;">Past Month</label>
+            <label style="position: relative; display: inline-block; width: 50px; height: 26px;">
               <input type="checkbox" id="injected-timePeriodToggle" ${timePeriodToggle ? 'checked' : ''} style="opacity: 0; width: 0; height: 0;">
               <span class="slider" style="
                 position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-                background-color: ${timePeriodToggle ? '#4caf50' : '#ccc'}; transition: 0.4s; border-radius: 20px;
+                background-color: ${timePeriodToggle ? '#4caf50' : '#ccc'}; transition: 0.3s; border-radius: 26px;
               ">
                 <span class="knob" style="
-                  position: absolute; content: ''; height: 16px; width: 16px; border-radius: 50%;
-                  left: ${timePeriodToggle ? '22px' : '2px'}; bottom: 2px; background-color: white; transition: 0.4s;
+                  position: absolute; content: ''; height: 20px; width: 20px; border-radius: 50%;
+                  left: ${timePeriodToggle ? '27px' : '3px'}; bottom: 3px; background-color: white; transition: 0.3s;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
                 "></span>
               </span>
             </label>
+            <label style="font-size: 14px; font-weight: 500; margin-left: 15px; color: #333;">All Time</label>
           </div>
           
-          <p style="margin: 10px 0; font-size: 12px; color: #6d6d6d; text-align: center;">
-            *Changes are saved automatically and will recalculate the analysis.
+          <p style="margin: 15px 0 0 0; font-size: 12px; color: #666; text-align: center; font-style: italic;">
+            Changes are saved automatically and will update the analysis in real-time
           </p>
         </div>
         
