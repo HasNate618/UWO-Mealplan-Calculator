@@ -73,7 +73,14 @@ function injectCalculatorForm() {
     
     tenderTypes.forEach(tender => {
       const balanceKey = `${tender.toLowerCase()}Balance`;
-      const savedBalance = result[balanceKey] || '0';
+      // Set default values for ResDlrs and Flex
+      let defaultBalance = '0';
+      if (tender === 'ResDlrs') {
+        defaultBalance = '2750';
+      } else if (tender === 'Flex') {
+        defaultBalance = '550';
+      }
+      const savedBalance = result[balanceKey] || defaultBalance;
       const tenderId = `injected-${tender.toLowerCase()}Balance`;
       
       tenderInputs.push(tenderId);
@@ -93,7 +100,7 @@ function injectCalculatorForm() {
     const totalInputs = 2 + tenderTypes.length; // 2 date inputs + tender inputs
     const gridCols = totalInputs <= 4 ? '1fr 1fr' : totalInputs <= 6 ? '1fr 1fr 1fr' : '1fr 1fr 1fr 1fr';
     
-    // Create the calculator form HTML
+    // Create the calculator form HTML with collapsible configuration
     const calculatorHTML = `
       <div id="mealplan-calculator" style="
         margin: 20px 0;
@@ -105,60 +112,68 @@ function injectCalculatorForm() {
         width: 100%;
         font-family: Arial, sans-serif;
       ">
-        <h2 style="
-          text-align: center;
-          color: #4f2683;
-          font-size: 20px;
-          font-weight: bold;
-          margin-bottom: 20px;
-        ">UWO Mealplan Calculator</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; ">
+          <h2 style="
+            color: #4f2683;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+          ">UWO Mealplan Calculator</h2>
+          <button id="config-toggle" style="
+            padding: 8px 16px;
+            background-color: #4f2683;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+          ">Settings</button>
+        </div>
         
-        <div style="display: grid; grid-template-columns: ${gridCols}; gap: 15px; margin-bottom: 15px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label style="font-size: 14px; margin-right: 5px;">Year Start Date:</label>
-            <input type="date" id="injected-startDate" value="${startDate}" style="
-              font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
-              border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
-            ">
+        <div id="config-panel" style="display: none; margin-top: 15px; margin-bottom: 15px;">
+          <div style="display: grid; grid-template-columns: ${gridCols}; gap: 15px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label style="font-size: 14px; margin-right: 5px;">Year Start Date:</label>
+              <input type="date" id="injected-startDate" value="${startDate}" style="
+                font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
+                border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
+              ">
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label style="font-size: 14px; margin-right: 5px;">Year End Date:</label>
+              <input type="date" id="injected-endDate" value="${endDate}" style="
+                font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
+                border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
+              ">
+            </div>
+            
+            ${tenderInputsHTML}
           </div>
           
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label style="font-size: 14px; margin-right: 5px;">Year End Date:</label>
-            <input type="date" id="injected-endDate" value="${endDate}" style="
-              font-size: 14px; padding: 5px; width: 140px; border: 1px solid #ccc;
-              border-radius: 3px; text-align: center; font-family: Arial, sans-serif;
-            ">
+          <div style="display: flex; align-items: center; justify-content: center; margin: 15px 0;">
+            <label style="font-size: 14px; margin-right: 10px;">Past Month/All Time:</label>
+            <label style="position: relative; display: inline-block; width: 40px; height: 20px;">
+              <input type="checkbox" id="injected-timePeriodToggle" ${timePeriodToggle ? 'checked' : ''} style="opacity: 0; width: 0; height: 0;">
+              <span class="slider" style="
+                position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+                background-color: ${timePeriodToggle ? '#4caf50' : '#ccc'}; transition: 0.4s; border-radius: 20px;
+              ">
+                <span class="knob" style="
+                  position: absolute; content: ''; height: 16px; width: 16px; border-radius: 50%;
+                  left: ${timePeriodToggle ? '22px' : '2px'}; bottom: 2px; background-color: white; transition: 0.4s;
+                "></span>
+              </span>
+            </label>
           </div>
           
-          ${tenderInputsHTML}
+          <p style="margin: 10px 0; font-size: 12px; color: #6d6d6d; text-align: center;">
+            *Changes are saved automatically and will recalculate the analysis.
+          </p>
         </div>
         
         <div id="tender-data" data-tenders='${JSON.stringify(tenderTypes)}' style="display: none;"></div>
-        
-        <div style="display: flex; align-items: center; justify-content: center; margin: 15px 0;">
-          <label style="font-size: 14px; margin-right: 10px;">Past Month/All Time:</label>
-          <label style="position: relative; display: inline-block; width: 40px; height: 20px;">
-            <input type="checkbox" id="injected-timePeriodToggle" ${timePeriodToggle ? 'checked' : ''} style="opacity: 0; width: 0; height: 0;">
-            <span class="slider" style="
-              position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-              background-color: ${timePeriodToggle ? '#4caf50' : '#ccc'}; transition: 0.4s; border-radius: 20px;
-            ">
-              <span class="knob" style="
-                position: absolute; content: ''; height: 16px; width: 16px; border-radius: 50%;
-                left: ${timePeriodToggle ? '22px' : '2px'}; bottom: 2px; background-color: white; transition: 0.4s;
-              "></span>
-            </span>
-          </label>
-        </div>
-        
-        <p style="margin: 10px 0; font-size: 12px; color: #6d6d6d; text-align: center;">
-          *Analyzing the past month provides a recent overview, while analyzing all time offers more accuracy.
-        </p>
-        
-        <button id="injected-calculateButton" style="
-          padding: 10px; background-color: #4f2683; border: none; border-radius: 5px;
-          cursor: pointer; color: white; font-weight: 500; width: 100%; font-size: 16px;
-        ">Analyze</button>
       </div>
     `;
 
@@ -176,14 +191,49 @@ function injectCalculatorForm() {
 
 // Function to set up event listeners for the injected form
 function setupEventListeners() {
-  const calculateButton = document.getElementById('injected-calculateButton');
+  const configToggle = document.getElementById('config-toggle');
+  const configPanel = document.getElementById('config-panel');
   const toggle = document.getElementById('injected-timePeriodToggle');
   
   // Get tender types from the hidden data element
   const tenderDataElement = document.getElementById('tender-data');
   const tenderTypes = tenderDataElement ? JSON.parse(tenderDataElement.dataset.tenders) : [];
   
-  // Save values when inputs change
+  // Toggle configuration panel
+  if (configToggle && configPanel) {
+    configToggle.addEventListener('click', () => {
+      if (configPanel.style.display === 'none') {
+        configPanel.style.display = 'block';
+        configToggle.textContent = 'Hide Settings';
+      } else {
+        configPanel.style.display = 'none';
+        configToggle.textContent = 'Settings';
+      }
+    });
+  }
+  
+  // Function to recalculate analysis
+  function recalculateAnalysis() {
+    const pastMonthBased = !document.getElementById('injected-timePeriodToggle').checked;
+    const startDate = document.getElementById('injected-startDate').value;
+    const endDate = document.getElementById('injected-endDate').value;
+    
+    // Get tender balances dynamically
+    const tenderBalances = {};
+    tenderTypes.forEach(tender => {
+      const inputId = `injected-${tender.toLowerCase()}Balance`;
+      const element = document.getElementById(inputId);
+      if (element) {
+        tenderBalances[tender] = parseFloat(element.value) || 0;
+      }
+    });
+    
+    // Run calculation and save values
+    saveFormValues();
+    runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderTypes);
+  }
+  
+  // Save values and recalculate when inputs change
   const inputs = ['injected-startDate', 'injected-endDate'];
   tenderTypes.forEach(tender => {
     inputs.push(`injected-${tender.toLowerCase()}Balance`);
@@ -192,7 +242,11 @@ function setupEventListeners() {
   inputs.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
-      element.addEventListener('change', saveFormValues);
+      // For number inputs (tender balances), recalculate on both input and change
+      if (element.type === 'number') {
+        element.addEventListener('input', recalculateAnalysis);
+      }
+      element.addEventListener('change', recalculateAnalysis);
     }
   });
   
@@ -207,29 +261,7 @@ function setupEventListeners() {
         slider.style.backgroundColor = '#ccc';
         knob.style.left = '2px';
       }
-      saveFormValues();
-    });
-  }
-  
-  if (calculateButton) {
-    calculateButton.addEventListener('click', () => {
-      // Get values from form
-      const pastMonthBased = !document.getElementById('injected-timePeriodToggle').checked;
-      const startDate = document.getElementById('injected-startDate').value;
-      const endDate = document.getElementById('injected-endDate').value;
-      
-      // Get tender balances dynamically
-      const tenderBalances = {};
-      tenderTypes.forEach(tender => {
-        const inputId = `injected-${tender.toLowerCase()}Balance`;
-        const element = document.getElementById(inputId);
-        if (element) {
-          tenderBalances[tender] = parseFloat(element.value) || 0;
-        }
-      });
-      
-      // Run calculation directly in content script
-      runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderTypes);
+      recalculateAnalysis();
     });
   }
 }
@@ -475,5 +507,33 @@ function runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderT
 // Initialize when page loads
 waitForPageLoad().then(() => {
   // Small delay to ensure page is fully rendered
-  setTimeout(injectCalculatorForm, 100);
+  setTimeout(() => {
+    injectCalculatorForm();
+    // Automatically run analysis on page load
+    setTimeout(runInitialAnalysis, 200);
+  }, 100);
 });
+
+// Function to run initial analysis automatically
+function runInitialAnalysis() {
+  const tenderDataElement = document.getElementById('tender-data');
+  if (!tenderDataElement) return;
+  
+  const tenderTypes = JSON.parse(tenderDataElement.dataset.tenders);
+  const toggle = document.getElementById('injected-timePeriodToggle');
+  const pastMonthBased = toggle ? !toggle.checked : false;
+  const startDate = document.getElementById('injected-startDate')?.value || '2025-09-01';
+  const endDate = document.getElementById('injected-endDate')?.value || '2026-04-30';
+  
+  // Get tender balances
+  const tenderBalances = {};
+  tenderTypes.forEach(tender => {
+    const inputId = `injected-${tender.toLowerCase()}Balance`;
+    const element = document.getElementById(inputId);
+    if (element) {
+      tenderBalances[tender] = parseFloat(element.value) || 0;
+    }
+  });
+  
+  runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderTypes);
+}
