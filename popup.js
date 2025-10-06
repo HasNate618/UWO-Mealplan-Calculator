@@ -1,3 +1,51 @@
+// Load saved values when popup opens
+document.addEventListener('DOMContentLoaded', () => {
+  loadSavedValues();
+  
+  // Add event listeners to save values when they change
+  document.getElementById('startDate').addEventListener('change', saveValues);
+  document.getElementById('endDate').addEventListener('change', saveValues);
+  document.getElementById('resBalance').addEventListener('input', saveValues);
+  document.getElementById('flexBalance').addEventListener('input', saveValues);
+  document.getElementById('timePeriodToggle').addEventListener('change', saveValues);
+});
+
+// Save form values to Chrome storage
+function saveValues() {
+  const values = {
+    startDate: document.getElementById('startDate').value,
+    endDate: document.getElementById('endDate').value,
+    resBalance: document.getElementById('resBalance').value,
+    flexBalance: document.getElementById('flexBalance').value,
+    timePeriodToggle: document.getElementById('timePeriodToggle').checked
+  };
+  
+  chrome.storage.local.set(values, () => {
+    console.log('Values saved');
+  });
+}
+
+// Load saved values from Chrome storage
+function loadSavedValues() {
+  chrome.storage.local.get(['startDate', 'endDate', 'resBalance', 'flexBalance', 'timePeriodToggle'], (result) => {
+    if (result.startDate) {
+      document.getElementById('startDate').value = result.startDate;
+    }
+    if (result.endDate) {
+      document.getElementById('endDate').value = result.endDate;
+    }
+    if (result.resBalance !== undefined) {
+      document.getElementById('resBalance').value = result.resBalance;
+    }
+    if (result.flexBalance !== undefined) {
+      document.getElementById('flexBalance').value = result.flexBalance;
+    }
+    if (result.timePeriodToggle !== undefined) {
+      document.getElementById('timePeriodToggle').checked = result.timePeriodToggle;
+    }
+  });
+}
+
 document.getElementById('calculateButton').addEventListener('click', () => {
   // Query the active tab
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
