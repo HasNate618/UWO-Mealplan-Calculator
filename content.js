@@ -412,6 +412,62 @@ function runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderT
     return dollar.localeCompare("-$NaN")?dollar:"N/A";
   }
 
+  // Calculate daily spending for the last 30 days
+  function calculateDailySpending() {
+    const dailySpending = {};
+    const today = new Date();
+    
+    // Initialize last 30 days with 0 spending
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateKey = date.toISOString().split('T')[0];
+      dailySpending[dateKey] = 0;
+    }
+    
+    // Scan through transactions and sum spending per day
+    let currentDate = null;
+    for (let i = 0; i < tableRows.length; i++) {
+      const row = tableRows[i];
+      const cells = row.querySelectorAll('td');
+      
+      // Check if this is a date group row (has colspan attribute)
+      if (cells.length === 1 && cells[0].hasAttribute('colspan')) {
+        // Parse date from format like "Wed. September 24th, 2025"
+        const dateText = cells[0].textContent.trim();
+        const dateMatch = dateText.match(/(\w+\.\s+)?(\w+)\s+(\d+)(?:st|nd|rd|th)?,\s+(\d+)/);
+        if (dateMatch) {
+          const monthName = dateMatch[2];
+          const day = dateMatch[3];
+          const year = dateMatch[4];
+          currentDate = new Date(`${monthName} ${day}, ${year}`);
+          console.log("Parsed date:", currentDate, "from", dateText);
+        }
+      } else if (cells.length >= 5 && currentDate) {
+        // This is a transaction row: Location, Amount, Balance, Tender, Transaction
+        const amountText = cells[1].textContent.trim(); // Amount column
+        const amount = parseFloat(amountText.replace('$', ''));
+        const transactionType = cells[4].textContent.trim(); // Transaction type
+        
+        const dateKey = currentDate.toISOString().split('T')[0];
+        console.log("Transaction:", dateKey, "Amount:", amount, "Type:", transactionType, "In range:", dailySpending.hasOwnProperty(dateKey));
+        
+        if (dailySpending.hasOwnProperty(dateKey) && transactionType === 'Sale') {
+          // Count all Sale transactions (positive amounts = spending)
+          if (amount > 0) {
+            dailySpending[dateKey] += amount;
+            console.log("Added to spending:", dateKey, "New total:", dailySpending[dateKey]);
+          }
+        }
+      }
+    }
+    
+    console.log("Final daily spending data:", dailySpending);
+    return dailySpending;
+  }
+  
+  const dailySpendingData = calculateDailySpending();
+
   // Remove existing analysis if present
   const existingAnalysis = document.getElementById('mealplan-analysis');
   if (existingAnalysis) {
@@ -459,7 +515,7 @@ function runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderT
   // Create analysis HTML to inject into the page
   const analysisHTML = `
     <div id="mealplan-analysis" style="
-      margin: 20px 0;
+      margin: 20px 0 40px 0;
       padding: 20px;
       background: #fff;
       border-radius: 8px;
@@ -472,7 +528,21 @@ function runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderT
         font-size: 24px;
         margin-bottom: 20px;
         font-family: Arial, sans-serif;
+        font-weight: bold;
       ">Spending Analysis</h2>
+      
+      <div style="margin-bottom: 30px;">
+        <h3 style="
+          text-align: center;
+          color: #4f2683;
+          font-size: 18px;
+          font-family: Arial, sans-serif;
+        ">Daily Spending - Last 30 Days</h3>
+        <div style="display: flex; justify-content: center;">
+          <canvas id="spending-chart" width="800" height="300" style="max-width: 100%;"></canvas>
+        </div>
+      </div>
+      
       <table style="
         width: 100%;
         border-collapse: collapse;
@@ -499,9 +569,108 @@ function runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderT
   if (calculatorForm) {
     // Insert the analysis after the calculator form
     calculatorForm.insertAdjacentHTML('afterend', analysisHTML);
+    
+    // Draw the spending chart
+    drawSpendingChart(dailySpendingData);
   }
 
   console.log("Analysis completed successfully");
+}
+
+// Function to draw the spending chart
+function drawSpendingChart(dailySpendingData) {
+  const canvas = document.getElementById('spending-chart');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = 60;
+  const chartWidth = width - padding * 2;
+  const chartHeight = height - padding * 2;
+  
+  // Clear canvas
+  ctx.clearRect(0, 0, width, height);
+  
+  // Get data points
+  const dates = Object.keys(dailySpendingData).sort();
+  const values = dates.map(date => dailySpendingData[date]);
+  const maxValue = Math.max(...values, 10); // Minimum scale of $10
+  
+  // Draw background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, width, height);
+  
+  // Draw grid lines and Y-axis labels
+  ctx.strokeStyle = '#e0e0e0';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#666';
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'right';
+  
+  const ySteps = 5;
+  for (let i = 0; i <= ySteps; i++) {
+    const y = padding + (chartHeight / ySteps) * i;
+    const value = maxValue - (maxValue / ySteps) * i;
+    
+    // Grid line
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(width - padding, y);
+    ctx.stroke();
+    
+    // Y-axis label
+    ctx.fillText('$' + value.toFixed(2), padding - 10, y + 4);
+  }
+  
+  // Draw X-axis labels (show every 5 days)
+  ctx.textAlign = 'center';
+  for (let i = 0; i < dates.length; i += 5) {
+    const x = padding + (chartWidth / (dates.length - 1)) * i;
+    const date = new Date(dates[i]);
+    const label = (date.getMonth() + 1) + '/' + date.getDate();
+    ctx.fillText(label, x, height - padding + 20);
+  }
+  
+  // Draw the line chart
+  ctx.strokeStyle = '#4f2683';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  
+  for (let i = 0; i < values.length; i++) {
+    const x = padding + (chartWidth / (values.length - 1)) * i;
+    const y = padding + chartHeight - (values[i] / maxValue) * chartHeight;
+    
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  }
+  ctx.stroke();
+  
+  // Draw data points
+  ctx.fillStyle = '#4f2683';
+  for (let i = 0; i < values.length; i++) {
+    const x = padding + (chartWidth / (values.length - 1)) * i;
+    const y = padding + chartHeight - (values[i] / maxValue) * chartHeight;
+    
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+  
+  // Draw axis labels
+  ctx.fillStyle = '#333';
+  ctx.font = '14px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Date', width / 2, height - 10);
+  
+  ctx.save();
+  ctx.translate(15, height / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Spending ($)', 0, 0);
+  ctx.restore();
 }
 
 // Initialize when page loads
