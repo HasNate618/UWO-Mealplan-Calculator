@@ -103,6 +103,18 @@ function showUpdateNotification() {
   // Removed auto-dismiss. Notification stays until closed by user.
 }
 
+// Safely parse the tender list stored in the hidden data element
+function parseTenderTypes(tenderDataElement) {
+  if (!tenderDataElement) return [];
+  try {
+    const parsed = JSON.parse(tenderDataElement.dataset.tenders);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error('Failed to parse tender types:', error);
+    return [];
+  }
+}
+
 // Function to detect tender types from the transaction table
 function detectTenderTypes() {
   const tableRows = document.querySelectorAll("table tr");
@@ -325,7 +337,7 @@ function setupEventListeners() {
   
   // Get tender types from the hidden data element
   const tenderDataElement = document.getElementById('tender-data');
-  const tenderTypes = tenderDataElement ? JSON.parse(tenderDataElement.dataset.tenders) : [];
+  const tenderTypes = parseTenderTypes(tenderDataElement);
   
   // Toggle configuration panel
   if (configToggle && configPanel) {
@@ -491,7 +503,7 @@ function saveFormValues() {
   // Save tender balances dynamically
   const tenderDataElement = document.getElementById('tender-data');
   if (tenderDataElement) {
-    const tenderTypes = JSON.parse(tenderDataElement.dataset.tenders);
+    const tenderTypes = parseTenderTypes(tenderDataElement);
     tenderTypes.forEach(tender => {
       const inputId = `injected-${tender.toLowerCase()}Balance`;
       const element = document.getElementById(inputId);
@@ -1001,7 +1013,8 @@ function runInitialAnalysis() {
   const tenderDataElement = document.getElementById('tender-data');
   if (!tenderDataElement) return;
   
-  const tenderTypes = JSON.parse(tenderDataElement.dataset.tenders);
+  const tenderTypes = parseTenderTypes(tenderDataElement);
+  if (tenderTypes.length === 0) return;
   const toggle = document.getElementById('injected-timePeriodToggle');
   const pastMonthBased = toggle ? !toggle.checked : false;
   const startDate = document.getElementById('injected-startDate')?.value || '2026-09-01';
