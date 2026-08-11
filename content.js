@@ -1,5 +1,5 @@
 // Content script that runs automatically on the UWO meal plan history page
-const CURRENT_VERSION = '1.1';
+const CURRENT_VERSION = '2026.1';
 
 // Wait for the page to be fully loaded
 function waitForPageLoad() {
@@ -60,8 +60,8 @@ function showUpdateNotification() {
       <div style="font-size: 14px; line-height: 1.6;">
         <p style="margin: 0 0 10px 0; font-weight: 500;">What's New:</p>
         <ul style="margin: 0; padding-left: 20px;">
-          <li><strong>Excluded Days Feature:</strong> Mark date ranges when you won't be using your meal plan (breaks, holidays, travel)</li>
-          <li><strong>Spending Chart Improved:</strong> Modern look, gradients, shadows, and clearer data points for easier analysis</li>
+          <li><strong>2026-27 Academic Year:</strong> Default dates updated to Sept 1, 2026 – April 30, 2027</li>
+          <li><strong>Updated Starting Balances:</strong> Defaults now reflect the 2026-27 meal plan (ResDlrs $3,550, Flex $550)</li>
         </ul>
       </div>
     </div>
@@ -150,8 +150,18 @@ function injectCalculatorForm() {
   });
   
   chrome.storage.local.get(storageKeys, (result) => {
-    const startDate = result.startDate || '2025-09-01';
-    const endDate = result.endDate || '2026-04-30';
+    // Default to the 2026-27 academic year. If saved dates still match the previous
+    // year's defaults, migrate them forward so returning users don't get stale
+    // projections. Dates the user customized are left untouched.
+    let startDate, endDate;
+    if (result.startDate === '2025-09-01' && result.endDate === '2026-04-30') {
+      startDate = '2026-09-01';
+      endDate = '2027-04-30';
+      chrome.storage.local.set({ startDate, endDate });
+    } else {
+      startDate = result.startDate || '2026-09-01';
+      endDate = result.endDate || '2027-04-30';
+    }
     const timePeriodToggle = result.timePeriodToggle !== undefined ? result.timePeriodToggle : true;
     const excludedRanges = result.excludedRanges || [];
     
@@ -164,7 +174,7 @@ function injectCalculatorForm() {
       // Set default values for ResDlrs and Flex
       let defaultBalance = '0';
       if (tender === 'ResDlrs') {
-        defaultBalance = '2750';
+        defaultBalance = '3550';
       } else if (tender === 'Flex') {
         defaultBalance = '550';
       }
@@ -692,7 +702,7 @@ function runAnalysis(pastMonthBased, tenderBalances, startDate, endDate, tenderT
         
         const dateKey = currentDate.toISOString().split('T')[0];
         
-        if (dailySpending.hasOwnProperty(dateKey) && transactionType === 'Sale') {
+        if (Object.hasOwn(dailySpending, dateKey) && transactionType === 'Sale') {
           // Count all Sale transactions (positive amounts = spending)
           if (amount > 0) {
             dailySpending[dateKey] += amount;
@@ -994,8 +1004,8 @@ function runInitialAnalysis() {
   const tenderTypes = JSON.parse(tenderDataElement.dataset.tenders);
   const toggle = document.getElementById('injected-timePeriodToggle');
   const pastMonthBased = toggle ? !toggle.checked : false;
-  const startDate = document.getElementById('injected-startDate')?.value || '2025-09-01';
-  const endDate = document.getElementById('injected-endDate')?.value || '2026-04-30';
+  const startDate = document.getElementById('injected-startDate')?.value || '2026-09-01';
+  const endDate = document.getElementById('injected-endDate')?.value || '2027-04-30';
   
   // Get tender balances
   const tenderBalances = {};

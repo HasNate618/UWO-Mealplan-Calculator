@@ -15,7 +15,7 @@ This extension calculates your daily meal spending and provides projections for 
 - **Target Spending Recommendations**: Get daily spending targets to help you finish on budget
 - **Visual Chart**: Interactive 30-day spending chart shows your daily spending patterns
 - **Persistent Settings**: Your starting balances and preferences are saved automatically
-- **Smart Defaults**: ResDlrs starts at $2,750 and Flex at $550 by default
+- **Smart Defaults**: ResDlrs starts at $3,550 and Flex at $550 by default
 - **Flexible Time Periods**: Calculate based on past month data or all-time spending
 - **Easy to Use**: Designed specifically for Western University students with a clean, intuitive interface
 
@@ -48,6 +48,7 @@ This extension calculates your daily meal spending and provides projections for 
 ## How It Works
 
 The extension:
+
 1. Scans your transaction table to detect all tender types
 2. Calculates your current balance and spending patterns
 3. Projects your balance at the end of the academic year
@@ -56,14 +57,15 @@ The extension:
 
 ## Settings
 
-- **Year Start Date**: Default is September 1, 2025
-- **Year End Date**: Default is April 30, 2026
+- **Year Start Date**: Default is September 1, 2026
+- **Year End Date**: Default is April 30, 2027
 - **Starting Balances**: Set your initial balance for each tender type
 - **Past Month/All Time Toggle**: Choose whether to calculate based on the last 30 days or since the start of the year
 
 ## Privacy
 
 This extension:
+
 - Only runs on `mealplan.uwo.ca` pages
 - Does not collect or transmit any personal data
 - Stores settings locally in your browser using Chrome's storage API
